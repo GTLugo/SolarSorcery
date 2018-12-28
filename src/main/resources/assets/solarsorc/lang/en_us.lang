@@ -1,0 +1,98 @@
+itemGroup.tabSolarSorcery=Solar Sorcery
+
+item.magic_wand.name=Magic Wand
+item.oak_wand.name=Oak Wand
+
+item.nullWand.name=NULL Wand
+
+item.oak_string_ironcapped.name=Oak Wand
+item.oak_string_goldcapped.name=Oak Wand
+item.oak_gunpowder_ironcapped.name=Oak Wand
+item.oak_gunpowder_goldcapped.name=Oak Wand
+item.oak_feather_ironcapped.name=Oak Wand
+item.oak_feather_goldcapped.name=Oak Wand
+item.oak_redstone_ironcapped.name=Oak Wand
+item.oak_redstone_goldcapped.name=Oak Wand
+item.oak_blazepowder_ironcapped.name=Oak Wand
+item.oak_blazepowder_goldcapped.name=Oak Wand
+
+item.birch_string_ironcapped.name=Birch Wand
+item.birch_string_goldcapped.name=Birch Wand
+item.birch_gunpowder_ironcapped.name=Birch Wand
+item.birch_gunpowder_goldcapped.name=Birch Wand
+item.birch_feather_ironcapped.name=Birch Wand
+item.birch_feather_goldcapped.name=Birch Wand
+item.birch_redstone_ironcapped.name=Birch Wand
+item.birch_redstone_goldcapped.name=Birch Wand
+item.birch_blazepowder_ironcapped.name=Birch Wand
+item.birch_blazepowder_goldcapped.name=Birch Wand
+
+
+item.spruce_string_ironcapped.name=Spruce Wand
+item.spruce_string_goldcapped.name=Spruce Wand
+item.spruce_gunpowder_ironcapped.name=Spruce Wand
+item.spruce_gunpowder_goldcapped.name=Spruce Wand
+item.spruce_feather_ironcapped.name=Spruce Wand
+item.spruce_feather_goldcapped.name=Spruce Wand
+item.spruce_redstone_ironcapped.name=Spruce Wand
+item.spruce_redstone_goldcapped.name=Spruce Wand
+item.spruce_blazepowder_ironcapped.name=Spruce Wand
+item.spruce_blazepowder_goldcapped.name=Spruce Wand
+
+
+item.jungle_string_ironcapped.name=Jungle Wand
+item.jungle_string_goldcapped.name=Jungle Wand
+item.jungle_gunpowder_ironcapped.name=Jungle Wand
+item.jungle_gunpowder_goldcapped.name=Jungle Wand
+item.jungle_feather_ironcapped.name=Jungle Wand
+item.jungle_feather_goldcapped.name=Jungle Wand
+item.jungle_redstone_ironcapped.name=Jungle Wand
+item.jungle_redstone_goldcapped.name=Jungle Wand
+item.jungle_blazepowder_ironcapped.name=Jungle Wand
+item.jungle_blazepowder_goldcapped.name=Jungle Wand
+
+
+item.acacia_string_ironcapped.name=Acacia Wand
+item.acacia_string_goldcapped.name=Acacia Wand
+item.acacia_gunpowder_ironcapped.name=Acacia Wand
+item.acacia_gunpowder_goldcapped.name=Acacia Wand
+item.acacia_feather_ironcapped.name=Acacia Wand
+item.acacia_feather_goldcapped.name=Acacia Wand
+item.acacia_redstone_ironcapped.name=Acacia Wand
+item.acacia_redstone_goldcapped.name=Acacia Wand
+item.acacia_blazepowder_ironcapped.name=Acacia Wand
+item.acacia_blazepowder_goldcapped.name=Acacia Wand
+
+
+item.darkoak_string_ironcapped.name=Dark Oak Wand
+item.darkoak_string_goldcapped.name=Dark Oak Wand
+item.darkoak_gunpowder_ironcapped.name=Dark Oak Wand
+item.darkoak_gunpowder_goldcapped.name=Dark Oak Wand
+item.darkoak_feather_ironcapped.name=Dark Oak Wand
+item.darkoak_feather_goldcapped.name=Dark Oak Wand
+item.darkoak_redstone_ironcapped.name=Dark Oak Wand
+item.darkoak_redstone_goldcapped.name=Dark Oak Wand
+item.darkoak_blazepowder_ironcapped.name=Dark Oak Wand
+item.darkoak_blazepowder_goldcapped.name=Dark Oak Wand
+
+item.bone_string_ironcapped.name=Bone Wand
+item.bone_string_goldcapped.name=Bone Wand
+item.bone_gunpowder_ironcapped.name=Bone Wand
+item.bone_gunpowder_goldcapped.name=Bone Wand
+item.bone_feather_ironcapped.name=Bone Wand
+item.bone_feather_goldcapped.name=Bone Wand
+item.bone_redstone_ironcapped.name=Bone Wand
+item.bone_redstone_goldcapped.name=Bone Wand
+item.bone_blazepowder_ironcapped.name=Bone Wand
+item.bone_blazepowder_goldcapped.name=Bone Wand
+
+item.solar_sword.name=Solar Sword
+item.solar_picksaw.name=Solar Picksaw
+
+solarsorcmisc.string=Spider Heartstring
+solarsorcmisc.gunpowder=Essence of Creeper
+solarsorcmisc.feather=Chicken Feather
+solarsorcmisc.redstone=Redstone Dust
+solarsorcmisc.blazepowder=Blazing Powder
+solarsorcmisc.ironcapped=Iron Capped
+solarsorcmisc.goldcapped=Gold Capped

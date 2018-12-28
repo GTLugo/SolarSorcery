@@ -1,0 +1,16 @@
+[
+{
+  "modid": "solarsorc",
+  "name": "Solar Sorcery",
+  "description": "Harness the power of the luminiferous aether with this magic mod.",
+  "version": "1.0",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Tenebris"],
+  "credits": "The internet; many open source mods such as Tinkers' Construct, Vazkii's mod: Botania, and more",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
