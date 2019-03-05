@@ -7,8 +7,8 @@
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Tenebris"],
-  "credits": "The internet; many open source mods such as Tinkers' Construct, Vazkii's mod: Botania, and more",
+  "authorList": ["GTLugo"],
+  "credits": "The internet, many open source mods such as Tinkers' Construct, Vazkii's mods, and more",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
