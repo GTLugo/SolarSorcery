@@ -19,6 +19,10 @@ public interface IPlayerData {
 	public boolean isCanRegen();
 
 	public void setCanRegen(boolean canRegen);
+
+	public void setRegenCooldown(int regenCooldown);
+
+	public int getRegenCooldown();
 	
 	public int getLevel();
 	

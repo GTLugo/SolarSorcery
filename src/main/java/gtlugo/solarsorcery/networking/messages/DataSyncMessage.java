@@ -15,6 +15,7 @@ public class DataSyncMessage extends NetworkMessage {
 	// A default constructor is always required
 
 	public boolean _canRegen;
+	public int _regenCooldown;
 	public float _maxMana;
 	public float _currMana;
 	
@@ -29,8 +30,9 @@ public class DataSyncMessage extends NetworkMessage {
 	public DataSyncMessage() {
 	}
 	
-	public DataSyncMessage(boolean canRegen, float maxMana, float currMana, int level, int experience, int expToLvl, String wood, String core, String cap) {
+	public DataSyncMessage(boolean canRegen, int regenCooldown, float maxMana, float currMana, int level, int experience, int expToLvl, String wood, String core, String cap) {
 		_canRegen = canRegen;
+		_regenCooldown = regenCooldown;
 		_maxMana = maxMana;
 		_currMana = currMana;
 		
@@ -49,6 +51,7 @@ public class DataSyncMessage extends NetworkMessage {
 		ClientTickHandler.scheduledActions.add(() -> {
 			IPlayerData data = SolarSorcery.proxy.getPlayerEntityFromContext(ctx).getCapability(PlayerDataProvider.TAG_DATA, null);
 			data.setCanRegen(_canRegen);
+			data.setRegenCooldown(_regenCooldown);
 			data.setMaxMana(_maxMana);
 			data.setCurrMana(_currMana);
 			

@@ -8,6 +8,7 @@ import net.minecraftforge.common.capabilities.Capability.IStorage;
 
 public class PlayerDataStorage implements IStorage<IPlayerData> { 
 	private static final String TAG_CANREGEN = "canRegen";
+	private static final String TAG_REGENCOOLDOWN = "regenCooldown";
 	private static final String TAG_MAXMANA = "maxMana";
 	private static final String TAG_CURRMANA = "currMana";
 	
@@ -23,6 +24,7 @@ public class PlayerDataStorage implements IStorage<IPlayerData> {
 	public NBTBase writeNBT(Capability<IPlayerData> capability, IPlayerData instance, EnumFacing side) { 
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setBoolean(TAG_CANREGEN, instance.isCanRegen());
+		tag.setInteger(TAG_REGENCOOLDOWN, instance.getRegenCooldown());
 		tag.setFloat(TAG_MAXMANA, instance.getMaxMana());
 		tag.setFloat(TAG_CURRMANA, instance.getCurrMana());
 		
@@ -39,6 +41,7 @@ public class PlayerDataStorage implements IStorage<IPlayerData> {
 	@Override 
 	public void readNBT(Capability<IPlayerData> capability, IPlayerData instance, EnumFacing side, NBTBase nbt) {
 		instance.setCanRegen(((NBTTagCompound) nbt).getBoolean(TAG_CANREGEN));
+		instance.setRegenCooldown((((NBTTagCompound) nbt).getInteger(TAG_REGENCOOLDOWN)));
 		instance.setMaxMana(((NBTTagCompound) nbt).getFloat(TAG_MAXMANA)); 
 		instance.setCurrMana(((NBTTagCompound) nbt).getFloat(TAG_CURRMANA)); 
 		

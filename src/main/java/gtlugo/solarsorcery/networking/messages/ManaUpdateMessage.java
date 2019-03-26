@@ -17,12 +17,11 @@ public class ManaUpdateMessage extends NetworkMessage {
 	// A default constructor is always required
 	public ManaUpdateMessage(){}
 	
-	public static int _tickCount = 0;
-	
-	public static class ManaUpdatePacketHandler implements IMessageHandler<ManaUpdateMessage, IMessage> {
-		// Do note that the default constructor is required, but implicitly defined in this case
-		@Override 
-		public IMessage onMessage(ManaUpdateMessage message, MessageContext ctx) {
+	//public static int _tickCount = 0;
+	public static int _cooldown = 0;
+
+	@Override
+	public IMessage handleMessage(MessageContext ctx) {
 			// This is the player the packet was sent to the server from
 			EntityPlayerMP serverPlayer = ctx.getServerHandler().player;
 			WorldServer serverWorld = serverPlayer.getServerWorld();
@@ -30,20 +29,20 @@ public class ManaUpdateMessage extends NetworkMessage {
 			// The value that was sent
 			// Execute the action on the main server thread by adding it as a scheduled task
 			ClientTickHandler.scheduledActions.add(() -> {
-				int timer = 1500;
-				if (serverWorld.getLight(serverPlayer.getPosition()) > 7) {
-					timer /= 3;
+				float manaIncrease = (data.getMaxMana() / 200); // 1/10th of max mana renewed per second... 20 ticks per second...
+				if (serverWorld.getLight(serverPlayer.getPosition()) < 7) {
+					manaIncrease /= 3;
 				}
-				if (_tickCount >= timer && data.isCanRegen()) {
-					NetworkHandler.INSTANCE.sendToServer(new ManaChangeMessage(1.0f));
-					System.out.println(Reference.MODID + ": regen mana");
-					_tickCount = 0;
+				if ((data.isCanRegen() && data.getRegenCooldown() < 1)) {
+					NetworkHandler.INSTANCE.sendToServer(new ManaChangeMessage(manaIncrease));
+					//System.out.println(Reference.MODID + ": regen mana");
 				}
-				else ++_tickCount;
+				else {
+					data.setRegenCooldown(data.getRegenCooldown() - 1);
+				}
 			});
 			//data.syncMana(serverPlayer);
 			// No response packet
 			return null;
 		}
 	}
-}

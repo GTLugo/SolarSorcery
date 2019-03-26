@@ -28,7 +28,10 @@ public class ManaRegenMessage extends NetworkMessage {
 		// The value that was sent
 		// Execute the action on the main server thread by adding it as a scheduled task
 		ClientTickHandler.scheduledActions.add(() -> {
-			data.setCanRegen(_canRegen);
+			if (!_canRegen) {
+				data.setRegenCooldown(100);
+			}
+			//data.setCanRegen(_canRegen);
 		});
 		// No response packet
 		return null;

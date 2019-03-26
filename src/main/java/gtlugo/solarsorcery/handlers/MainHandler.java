@@ -31,7 +31,7 @@ public class MainHandler {
 			
 			ManaUpdateMessage updateMessage = new ManaUpdateMessage();
 			NetworkHandler.INSTANCE.sendToServer(updateMessage);
-			DataSyncMessage syncMessage = new DataSyncMessage(data.isCanRegen(), data.getMaxMana(), data.getCurrMana(), data.getLevel(), data.getExperience(), data.getExpToLvl(), data.getWood(), data.getCore(), data.getCap());
+			DataSyncMessage syncMessage = new DataSyncMessage(data.isCanRegen(), data.getRegenCooldown(), data.getMaxMana(), data.getCurrMana(), data.getLevel(), data.getExperience(), data.getExpToLvl(), data.getWood(), data.getCore(), data.getCap());
 			NetworkHandler.INSTANCE.sendTo(syncMessage, serverPlayer);
 		}
 	}

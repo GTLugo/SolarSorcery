@@ -1,6 +1,7 @@
 package gtlugo.solarsorcery.handlers;
 
 import gtlugo.solarsorcery.Reference;
+import gtlugo.solarsorcery.items.tools.IWandBase;
 import gtlugo.solarsorcery.playerdata.IPlayerData;
 import gtlugo.solarsorcery.playerdata.PlayerDataProvider;
 import net.minecraft.client.Minecraft;
@@ -8,6 +9,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -37,6 +39,9 @@ public final class HUDHandler {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onDraw(RenderGameOverlayEvent.Post event) {
+		Minecraft mc = Minecraft.getMinecraft();
+		EntityPlayer player = mc.player;
+
 		if (event.getType() == ElementType.EXPERIENCE) {
 			ScaledResolution resolution = event.getResolution(); 
 			float partialTicks = event.getPartialTicks();
@@ -44,11 +49,25 @@ public final class HUDHandler {
 			drawManaBar(resolution, partialTicks);
 		}
 	}
+
+	public static boolean shouldDisplayMana(ItemStack stack) {
+		boolean decision = false;
+		if ((stack.getItem() instanceof IWandBase) && !(stack.isEmpty())) {
+			decision = true;
+		}
+
+		return decision;
+	}
 	
 	@SideOnly(Side.CLIENT)
 	public void drawManaBar(ScaledResolution res, float pticks) {
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer player = mc.player;
+
+		if (!shouldDisplayMana(player.getHeldItemMainhand()) && !shouldDisplayMana(player.getHeldItemOffhand())) {
+			return;
+		}
+
 		FontRenderer font = mc.fontRenderer;
 		//OpenGlHelper glHelper;
 		ScaledResolution scaledRes = new ScaledResolution(mc);
@@ -138,14 +157,15 @@ public final class HUDHandler {
 		double x3 = (1.04167 * Math.pow(x, 3.0));
 		double x2 = (1.5625 * Math.pow(x, 2.0));
 		double x1 = (1.52083 * x);
-		double h = (x3 - x2 + x1);
-		return h;
+		return (x3 - x2 + x1);
 	}
 	
 	public String valueWithPrefix(double value) {
 		int count = 0;
-		int beforeDecimal;
-		int afterDecimal;
+		int decimalPos = 0;
+		int digit0;
+		int digit1;
+		int digit2;
 		String prefix;
 		String display;
 		
@@ -154,20 +174,30 @@ public final class HUDHandler {
 			++count;
 		}
 
-		beforeDecimal = (int) value;
+		int beforeDecimal = (int) value;
 		if (value < 100.0) {
-			double temp;
-			temp = (value - beforeDecimal);
+			double afterDecimal = (value - beforeDecimal);
 			
-			if (value < 10.0)
-				afterDecimal = (int) (temp * 100.0);
-			else
-				afterDecimal = (int) (temp * 10.0);
+			if (value < 10.0) { // 1.00 - 9.99
+				digit0 = (int) value;
+				digit1 = (int) (afterDecimal * 10.0);
+				digit2 = (int) ((afterDecimal * 100.0) - (digit1 * 10));
+				decimalPos = 2;
+			}
+			else { // 10.0 - 99.9
+				digit0 = (int) (value / 10);
+				digit1 = (int) (value - (digit0 * 10));
+				digit2 = (int) (afterDecimal * 10.0);
+				decimalPos = 1;
+			}
 		}
-		else {
-			afterDecimal = -1;
+		else { // 100 - 999
+			digit0 = (int) (value / 100);
+			digit1 = (int) ((value / 10) - (digit0 * 10));
+			digit2 = (int) (value - (digit1 * 10) - (digit0 * 100));
+			//decimalPos = 3;
 		}
-		
+
 		switch (count) {
 		case 0:
 			prefix = "";
@@ -181,10 +211,10 @@ public final class HUDHandler {
 		default:
 			prefix = "G?";
 		}
-		
-		display = String.valueOf(beforeDecimal);
-		if (afterDecimal > 0) display += ("." + String.valueOf(afterDecimal));
-		else if (afterDecimal == 0) display += (".00"); //double zeroes cannot be displayed as they will just be a single zero as stored in the integer type.
+
+		display = digit0 + ((decimalPos == 2) ? "." : "")
+				+ digit1 + ((decimalPos == 1) ? "." : "")
+				+ digit2;
 		display += prefix;
 		
 		return display;

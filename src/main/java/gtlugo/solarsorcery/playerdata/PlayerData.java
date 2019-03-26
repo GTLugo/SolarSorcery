@@ -3,6 +3,7 @@ package gtlugo.solarsorcery.playerdata;
 public class PlayerData implements IPlayerData {
 
 	private boolean _canRegen = true;
+	private int _regenCooldown = 0;
 	private float _maxMana = 10.0f;
 	private float _currMana = 10.0f;
 	
@@ -49,7 +50,10 @@ public class PlayerData implements IPlayerData {
 	public void setCanRegen(boolean canRegen) {
 		this._canRegen = canRegen;
 	}
-	
+
+	@Override
+	public void setRegenCooldown(int regenCooldown) { this._regenCooldown = regenCooldown; }
+
 	@Override
 	public float getMaxMana() {
 		return this._maxMana; 
@@ -64,7 +68,10 @@ public class PlayerData implements IPlayerData {
 	public boolean isCanRegen() {
 		return this._canRegen;
 	}
-	
+
+	@Override
+	public int getRegenCooldown() { return this._regenCooldown; }
+
 	/*
 	 * LEVELING SYSTEM
 	 */
