@@ -4,12 +4,15 @@ package gtlugo.solarsorcery.handlers;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import gtlugo.solarsorcery.lib.Reference;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
+import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.TickEvent.RenderTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 public class ClientTickHandler {
 
@@ -36,7 +39,7 @@ public class ClientTickHandler {
 	@SubscribeEvent
 	public void clientTickEnd(ClientTickEvent event) {
 		if(event.phase == Phase.END) {
-			Minecraft mc = Minecraft.getMinecraft();
+			Minecraft mc = Minecraft.getInstance();
 			/*if(mc.world == null)
 				PlayerDataHandler.cleanup();
 			else*/ if(mc.player != null) {
@@ -46,8 +49,8 @@ public class ClientTickHandler {
 
 			HUDHandler.tick();
 
-			GuiScreen gui = mc.currentScreen;
-			if(gui == null || !gui.doesGuiPauseGame()) {
+			Screen gui = mc.currentScreen;
+			if(gui == null || !gui.isPauseScreen()) {
 				ticksInGame++;
 				partialTicks = 0;
 			}

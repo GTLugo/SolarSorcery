@@ -1,153 +1,150 @@
 package gtlugo.solarsorcery.handlers;
 
-import gtlugo.solarsorcery.Reference;
-import gtlugo.solarsorcery.items.tools.IWandBase;
+import gtlugo.solarsorcery.SolarSorcery;
+import gtlugo.solarsorcery.lib.Reference;
 import gtlugo.solarsorcery.playerdata.IPlayerData;
+import gtlugo.solarsorcery.playerdata.PlayerData;
 import gtlugo.solarsorcery.playerdata.PlayerDataProvider;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 public final class HUDHandler {
 	
 	//add resource locations here
-	private static final ResourceLocation TAG_MANABAR = new ResourceLocation(Reference.MODID, "textures/gui/mana_globe.png");
+	private static final ResourceLocation TAG_MANABAR = SolarSorcery.getId("textures/gui/mana_globe.png");
 	
 	/*
 	 * tex = texture size
 	 * loc = location on texture sheet
 	 * pos = position on screen
 	 */
-	private final int _tex_Width = 117, _tex_Height = 137;
+	private final int _tex_Width = 71, _tex_Height = 85;
 	
-	private final int _tex_globeWidth = 68, _tex_globeHeight = 68, 
+	private final int _tex_globeWidth = 71, _tex_globeHeight = 45,
 					  _loc_globeX = 0, _loc_globeY = 0;
 	
-	private final int _tex_manaWidth = 56, _tex_manaHeight = 56, 
-					  _loc_manaX = 6, _loc_manaY = 75;
+	private final int _tex_manaWidth = 39, _tex_manaHeight = 39,
+					  _loc_manaX = 0, _loc_manaY = 46;
 	
 	
 	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onDraw(RenderGameOverlayEvent.Post event) {
-		Minecraft mc = Minecraft.getMinecraft();
-		EntityPlayer player = mc.player;
+	public void onDraw(RenderGameOverlayEvent.Pre event) {
+		World world = Minecraft.getInstance().world;
+		if (world.isRemote) {
+			if (event.getType() == ElementType.HOTBAR) {
 
-		if (event.getType() == ElementType.EXPERIENCE) {
-			ScaledResolution resolution = event.getResolution(); 
-			float partialTicks = event.getPartialTicks();
-			//Stuff here
-			drawManaBar(resolution, partialTicks);
+				MainWindow window = event.getWindow();
+				float partialTicks = event.getPartialTicks();
+				//Stuff here
+				drawManaBar(window, partialTicks);
+			}
 		}
 	}
 
-	public static boolean shouldDisplayMana(ItemStack stack) {
-		boolean decision = false;
-		if ((stack.getItem() instanceof IWandBase) && !(stack.isEmpty())) {
-			decision = true;
-		}
-
-		return decision;
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public void drawManaBar(ScaledResolution res, float pticks) {
-		Minecraft mc = Minecraft.getMinecraft();
-		EntityPlayer player = mc.player;
-
-		if (!shouldDisplayMana(player.getHeldItemMainhand()) && !shouldDisplayMana(player.getHeldItemOffhand())) {
-			return;
-		}
-
+	public void drawManaBar(MainWindow window, float pticks) {
+		Minecraft mc = Minecraft.getInstance();
+		World world = mc.world;
+		if (!world.isRemote) return;
+		PlayerEntity player = mc.player;
 		FontRenderer font = mc.fontRenderer;
 		//OpenGlHelper glHelper;
-		ScaledResolution scaledRes = new ScaledResolution(mc);
-		IPlayerData data = player.getCapability(PlayerDataProvider.TAG_DATA, null);
-		mc.renderEngine.bindTexture(TAG_MANABAR);
-		
+		PlayerData.getPlayerData(player).ifPresent(data -> {
 
-		//int scaleFactor = scaledRes.getScaleFactor();
-        int maxX = scaledRes.getScaledWidth();
-        int maxY = scaledRes.getScaledHeight();
-        
-		int pad = 3;
+			mc.getTextureManager().bindTexture(TAG_MANABAR);
 
-		String currentManaStr;
-		String maxManaStr;
 
-		double currMana = data.getCurrMana();
-		currentManaStr = valueWithPrefix(currMana);
-		
-		double maxMana = data.getMaxMana();
-		maxManaStr = valueWithPrefix(maxMana);
-		
-		String centerLineStr = "——————";
-    	String levelStr = String.valueOf(data.getLevel());
-    	
-    	/*
-    	 * Calculating the height of the mana fluid inside the globe
-    	 */
-    	double percentMana = data.getCurrMana() / data.getMaxMana();
-    	
-		//double fullRadius = 56.0 / 2.0;
-		//double percentAngle = (2.0 * Math.PI) * ( 1.0 - percentMana); //angle goes from 0 - 360 degrees representing a half-circle
-		
-		int manaHeight = (int) Math.round( (double) _tex_manaHeight * heightFunc(percentMana));
-		//int manaHeight = (int) (_tex_manaHeight * (data.getCurrMana() / data.getMaxMana()));
-		int manaCalculatedVertOffset = _tex_manaHeight - manaHeight; //for finding the correct place to start rendering the mana fluid on the vertical axis
-		
-		int pos_globeX = (maxX - _tex_globeWidth) - pad;
-		int pos_globeY = (maxY - _tex_globeHeight) - pad;
-		
-		
-		/*
-		 * Mana Fluid
-		 */
-		Gui.drawModalRectWithCustomSizedTexture(pos_globeX + 6, (pos_globeY + 6 + manaCalculatedVertOffset), _loc_manaX,( _loc_manaY + manaCalculatedVertOffset), _tex_manaWidth, manaHeight, _tex_Width, _tex_Height); //+4 offset is for correctly positioning the mana fluid
-		
-		/*
-		 * Mana Globe
-		 */
-		Gui.drawModalRectWithCustomSizedTexture(pos_globeX, pos_globeY, _loc_globeX, _loc_globeY, _tex_globeWidth, _tex_globeHeight, _tex_Width, _tex_Height); //+4 offset is for correctly positioning the mana fluid
-		
-		int pos_globeCenterX = ( pos_globeX + (_tex_globeWidth / 2) );
-		int pos_globeCenterY = ( pos_globeY + (_tex_globeHeight / 2) );
-		
-		/*
-		 * Center Line
-		 */
-		int pos_centerLineX = ( pos_globeCenterX - (font.getStringWidth(centerLineStr) / 2) );
-		int pos_centerLineY = ( ( pos_globeCenterY - (font.FONT_HEIGHT / 2) ) - 5); //the 5 is to raise the centerline to avoid the numbers spilling over the level indicator
-		font.drawStringWithShadow(centerLineStr, pos_centerLineX, pos_centerLineY, Integer.parseInt("FFD800", 16)); //these - y offsets are to more properly center the text vertically on the bar
-		/*
-		 * Current Mana Number
-		 */
-		int pos_currManaNumX = ( pos_globeCenterX - (font.getStringWidth(currentManaStr) / 2) );
-		int pos_currManaNumY = ( pos_centerLineY - (font.FONT_HEIGHT) + 3 ); //the 3 is to make the number closer to the center line
-		font.drawStringWithShadow(currentManaStr, pos_currManaNumX, pos_currManaNumY, Integer.parseInt("FFD800", 16));
-		/*
-		 * Max Mana Number
-		 */
-		int pos_maxManaNumX = ( pos_globeCenterX - (font.getStringWidth(maxManaStr) / 2) );
-		int pos_maxManaNumY = ( pos_centerLineY + (font.FONT_HEIGHT - 1) ); //the 1 is to make the number closer to the center line
-		font.drawStringWithShadow(maxManaStr, pos_maxManaNumX, pos_maxManaNumY, Integer.parseInt("FFD800", 16));
-		/*
-		 * Level Number
-		 */
-		int pos_levelNumX = pos_globeX + 42 + (27 / 2) - (font.getStringWidth(levelStr) / 2);
-		int pos_levelNumY = pos_globeY + 42 + (27 / 2) - (font.FONT_HEIGHT / 2);
-		font.drawString(levelStr, pos_levelNumX, pos_levelNumY, Integer.parseInt("D73800", 16)); //these - y offsets are to more properly center the text vertically on the bar
-    	
-    	//}
+			//int scaleFactor = scaledRes.getScaleFactor();
+			int maxX = window.getScaledWidth();
+			int maxY = window.getScaledHeight();
+
+			int pad = 3;
+
+			String currentManaStr;
+			String maxManaStr;
+
+			double currMana = data.getCurrMana();
+			currentManaStr = valueWithPrefix(currMana);
+
+			double maxMana = data.getMaxMana();
+			maxManaStr = valueWithPrefix(maxMana);
+
+			String centerLineStr = "------";
+			String levelStr = String.valueOf(data.getLevel());
+
+			/*
+			 * Calculating the height of the mana fluid inside the globe
+			 */
+			double percentMana = data.getCurrMana() / data.getMaxMana();
+
+			//double fullRadius = 56.0 / 2.0;
+			//double percentAngle = (2.0 * Math.PI) * ( 1.0 - percentMana); //angle goes from 0 - 360 degrees representing a half-circle
+
+			int manaHeight = (int) Math.round((double) _tex_manaHeight * heightFunc(percentMana));
+			//int manaHeight = (int) (_tex_manaHeight * (data.getCurrMana() / data.getMaxMana()));
+			int manaCalculatedVertOffset = _tex_manaHeight - manaHeight; //for finding the correct place to start rendering the mana fluid on the vertical axis
+
+
+			int pos_globeX = ((maxX / 2) + (_tex_globeWidth / 2)) + 100;
+			int pos_globeY = (maxY - _tex_globeHeight) /*- pad*/;
+
+
+			/*
+			 * Mana Fluid
+			 */
+			AbstractGui.blit(pos_globeX + 29, (pos_globeY + 0 + manaCalculatedVertOffset) + 2, _loc_manaX, (_loc_manaY + manaCalculatedVertOffset), _tex_manaWidth, manaHeight, _tex_Width, _tex_Height); //+6 offset is for correctly positioning the mana fluid
+
+			/*
+			 * Mana Globe
+			 */
+			AbstractGui.blit(pos_globeX, pos_globeY, _loc_globeX, _loc_globeY, _tex_globeWidth, _tex_globeHeight, _tex_Width, _tex_Height);
+
+			int pos_globeCenterX = (pos_globeX + (_tex_globeWidth - 23)); // 23 is the radius of the actual orb
+			int pos_globeCenterY = (pos_globeY + (_tex_globeHeight / 2));
+
+			/*
+			 * Center Line
+			 */
+			//int pos_centerLineX = (pos_globeCenterX - (font.getStringWidth(centerLineStr) / 2));
+			//int pos_centerLineY = ((pos_globeCenterY - (font.FONT_HEIGHT / 2)) - 5); //the - 5 is to raise the centerline to avoid the numbers spilling over the level indicator
+			//font.drawStringWithShadow(centerLineStr, pos_centerLineX, pos_centerLineY, Integer.parseInt("FFD800", 16)); //these - y offsets are to more properly center the text vertically on the bar
+			/*
+			 * Current Mana Number
+			 */
+			int pos_currManaNumX = (pos_globeCenterX - (font.getStringWidth(currentManaStr) / 2));
+			int pos_currManaNumY = (pos_globeCenterY - (font.FONT_HEIGHT) /*+ 3*/); //the 3 is to make the number closer to the center line
+			font.drawStringWithShadow(currentManaStr, pos_currManaNumX, pos_currManaNumY, Integer.parseInt("FFD800", 16));
+			/*
+			 * Max Mana Number
+			 */
+			int pos_maxManaNumX = (pos_globeCenterX - (font.getStringWidth(maxManaStr) / 2));
+			int pos_maxManaNumY = (pos_globeCenterY + (font.FONT_HEIGHT - 8)); //the 1 is to make the number closer to the center line
+			font.drawStringWithShadow(maxManaStr, pos_maxManaNumX, pos_maxManaNumY, Integer.parseInt("FFD800", 16));
+			/*
+			 * Level Number
+			 */
+			int pos_levelNumX = pos_globeX
+					+ 6 /*top left corner of the level "screen" section relative to texture*/
+					+ (22 / 2) /*center of level "screen" section relative to itself*/
+					- (font.getStringWidth(levelStr) / 2);
+			int pos_levelNumY = pos_globeY
+					+ 25  /*top left corner of the level "screen" section relative to texture*/
+					+ (17 / 2) /*center of level "screen" section relative to itself*/
+					- (font.FONT_HEIGHT / 2);
+			font.drawString(levelStr, pos_levelNumX, pos_levelNumY, Integer.parseInt("D73800", 16)); //these - y offsets are to more properly center the text vertically on the bar
+
+			//}
+
+		});
 	}
 	
 	/*
@@ -157,15 +154,15 @@ public final class HUDHandler {
 		double x3 = (1.04167 * Math.pow(x, 3.0));
 		double x2 = (1.5625 * Math.pow(x, 2.0));
 		double x1 = (1.52083 * x);
-		return (x3 - x2 + x1);
+		double h = (x3 - x2 + x1);
+		return h;
 	}
 	
 	public String valueWithPrefix(double value) {
 		int count = 0;
-		int decimalPos = 0;
-		int digit0;
-		int digit1;
-		int digit2;
+		int beforeDecimal;
+		int afterDecimal1;
+		int afterDecimal2;
 		String prefix;
 		String display;
 		
@@ -174,30 +171,26 @@ public final class HUDHandler {
 			++count;
 		}
 
-		int beforeDecimal = (int) value;
+		beforeDecimal = (int) value;
 		if (value < 100.0) {
-			double afterDecimal = (value - beforeDecimal);
+			double temp;
+			temp = (value - beforeDecimal);
 			
-			if (value < 10.0) { // 1.00 - 9.99
-				digit0 = (int) value;
-				digit1 = (int) (afterDecimal * 10.0);
-				digit2 = (int) ((afterDecimal * 100.0) - (digit1 * 10));
-				decimalPos = 2;
+			if (value < 10.0) { // if 1.00 to 9.99
+				afterDecimal1 = (int) (temp * 10.0);
+				temp = ((temp * 10.0) - afterDecimal1);
+				afterDecimal2 = (int) (temp * 10.0);
 			}
-			else { // 10.0 - 99.9
-				digit0 = (int) (value / 10);
-				digit1 = (int) (value - (digit0 * 10));
-				digit2 = (int) (afterDecimal * 10.0);
-				decimalPos = 1;
+			else { // if 10.0 to 99.9
+				afterDecimal1 = (int) (temp * 10.0);
+				afterDecimal2 = -1;
 			}
 		}
-		else { // 100 - 999
-			digit0 = (int) (value / 100);
-			digit1 = (int) ((value / 10) - (digit0 * 10));
-			digit2 = (int) (value - (digit1 * 10) - (digit0 * 100));
-			//decimalPos = 3;
+		else { // if 100 to 999
+			afterDecimal1 = -1;
+			afterDecimal2 = -1;
 		}
-
+		
 		switch (count) {
 		case 0:
 			prefix = "";
@@ -211,10 +204,10 @@ public final class HUDHandler {
 		default:
 			prefix = "G?";
 		}
-
-		display = digit0 + ((decimalPos == 2) ? "." : "")
-				+ digit1 + ((decimalPos == 1) ? "." : "")
-				+ digit2;
+		
+		display = String.valueOf(beforeDecimal);
+		if (afterDecimal1 >= 0) display += ("." + String.valueOf(afterDecimal1));
+		if (afterDecimal2 >= 0) display += String.valueOf(afterDecimal2);
 		display += prefix;
 		
 		return display;

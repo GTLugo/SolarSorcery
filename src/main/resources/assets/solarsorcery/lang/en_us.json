@@ -1,0 +1,25 @@
+{
+  "block.solarsorcery.meteorite": "Meteorite",
+  
+  "item.solarsorcery.magic_wand": "Magic Wand",
+  "item.solarsorcery.null_wand": "NULL Wand",
+
+  "item.solarsorcery.wand_oak": "Oak Wand",
+  "item.solarsorcery.wand_birch": "Birch Wand",
+  "item.solarsorcery.wand_spruce": "Spruce Wand",
+  "item.solarsorcery.wand_jungle": "Jungle Wand",
+  "item.solarsorcery.wand_acacia": "Acacia Wand",
+  "item.solarsorcery.wand_darkoak": "Dark Oak Wand",
+  "item.solarsorcery.wand_bone": "Bone Wand",
+
+  "item.solarsorcery.solar_sword": "Solar Sword",
+  "item.solarsorcery.solar_picksaw": "Solar Picksaw",
+
+  "solarsorcerymisc.string": "Spider Heartstring",
+  "solarsorcerymisc.gunpowder": "Essence of Creeper",
+  "solarsorcerymisc.feather": "Chicken Feather",
+  "solarsorcerymisc.redstone": "Redstone Dust",
+  "solarsorcerymisc.blazepowder": "Blazing Powder",
+  "solarsorcerymisc.ironcapped": "Iron Capped",
+  "solarsorcerymisc.goldcapped": "Gold Capped"
+}

@@ -1,71 +1,37 @@
 package gtlugo.solarsorcery.init;
 
-import gtlugo.solarsorcery.Reference;
-import gtlugo.solarsorcery.items.tools.PicksawBase;
-import gtlugo.solarsorcery.items.tools.SwordBase;
-import gtlugo.solarsorcery.items.tools.WandBase;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
+import gtlugo.solarsorcery.SolarSorcery;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.Item.ToolMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.util.EnumHelper;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.ForgeRegistries;
 
-@Mod.EventBusSubscriber(modid=Reference.MODID)
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class ModItems {
-	public static final ToolMaterial SOLARMAT = EnumHelper.addToolMaterial("SOLARMATERIAL", 2, -1, 8.0f, 2.0f, 11);
-	
-	//public static Item magicWand;
-	//public static Item oakWand;
-	public static Item wand;
-	public static Item solarSword;
-	public static Item solarPicksaw;
-	
-	static final CreativeTabs TABSOLARSORC = (new CreativeTabs("tabSolarSorcery") {
-		@Override
-		public ItemStack getTabIconItem() {
-			return new ItemStack(solarSword);
-		}
-	});
-	
-	public static void init() {
-		//magicWand = new WandBase("magic_wand").setCreativeTab(TABSOLARSORC);
-		//oakWand = new WandBase("oak_wand").setCreativeTab(TABSOLARSORC);
-		wand = new WandBase("wand").setCreativeTab(TABSOLARSORC);
-		solarSword = new SwordBase("solar_sword", SOLARMAT).setCreativeTab(TABSOLARSORC);
-		solarPicksaw = new PicksawBase("solar_picksaw", SOLARMAT).setCreativeTab(TABSOLARSORC);
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public static void registerItems(RegistryEvent.Register<Item> event) {
-		event.getRegistry().registerAll(
-				//magicWand,
-				//oakWand,
-				wand,
-				solarSword,
-				solarPicksaw
-				);
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent
-	public static void registerModels(ModelRegistryEvent event) {
-		//registerRender(magicWand);
-		//registerRender(oakWand);
-		registerRender(wand);
-		registerRender(solarSword);
-		registerRender(solarPicksaw);
-	}
+    static final Map<String, BlockItem> BLOCKS_TO_REGISTER = new LinkedHashMap<>();
 
-	private static void registerRender(Item item) {
-			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation( item.getRegistryName(), "inventory"));
-	}
+    public static Item magicWand;
+
+    public static void registerAll(RegistryEvent.Register<Item> event) {
+        if (!event.getName().equals(ForgeRegistries.ITEMS.getRegistryName())) {
+            return;
+        }
+
+        // Blocks //
+        BLOCKS_TO_REGISTER.forEach(ModItems::register);
+
+        // Items //
+        magicWand = register("magic_wand", new Item(new Item.Properties().group(ItemGroup.MISC)));
+    }
+
+    private static <T extends Item> T register(String name, T item) {
+        ResourceLocation id = SolarSorcery.getId(name);
+        item.setRegistryName(id);
+        ForgeRegistries.ITEMS.register(item);
+        return item;
+    }
 }

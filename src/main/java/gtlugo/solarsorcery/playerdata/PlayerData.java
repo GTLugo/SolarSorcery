@@ -1,32 +1,61 @@
 package gtlugo.solarsorcery.playerdata;
 
+import gtlugo.solarsorcery.SolarSorcery;
+import gtlugo.solarsorcery.handlers.NetworkHandler;
+import gtlugo.solarsorcery.lib.Reference;
+import gtlugo.solarsorcery.networking.DataSyncMessage;
+import gtlugo.solarsorcery.networking.ManaChangeMessage;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+
+import javax.annotation.Nullable;
+import java.util.Random;
+
 public class PlayerData implements IPlayerData {
+	public static final ResourceLocation DATA_ID = SolarSorcery.getId("data");
+
+	@CapabilityInject(IPlayerData.class)
+	public static final Capability<IPlayerData> DATA_CAPABILITY = null;
+	public static final Direction DEFAULT_FACING = null;
+
+	public static int _tickCount = 0;
+
 
 	private boolean _canRegen = true;
-	private int _regenCooldown = 0;
 	private float _maxMana = 10.0f;
 	private float _currMana = 10.0f;
+	private int _cooldown = 20;
 	
 	private int _level = 1;
 	private int _experience = 0;
 	private int _expToLvl = 1000;
 	
-	private String _wood = null;
-	private String _core = null;
-	private String _cap = null;
-
+	private String _wood = "null";
+	private String _core = "null";
+	private String _cap = "null";
 	
 	/*
 	 * MANA SYSTEM
 	 */
-	
-	@Override
-	public void useMana(float points) { 
+
+	private void useMana(float points) {
 		this._currMana = Math.max(this._currMana + points, 0.0f);
 	} 
-	
-	@Override
-	public void giveMana(float points) { 
+
+	private void giveMana(float points) {
 		this._currMana = Math.min(this._currMana + points, this._maxMana); 
 	} 
 	
@@ -50,10 +79,7 @@ public class PlayerData implements IPlayerData {
 	public void setCanRegen(boolean canRegen) {
 		this._canRegen = canRegen;
 	}
-
-	@Override
-	public void setRegenCooldown(int regenCooldown) { this._regenCooldown = regenCooldown; }
-
+	
 	@Override
 	public float getMaxMana() {
 		return this._maxMana; 
@@ -63,14 +89,21 @@ public class PlayerData implements IPlayerData {
 	public float getCurrMana() { 
 		return this._currMana; 
 	}
-	
+
 	@Override
 	public boolean isCanRegen() {
 		return this._canRegen;
 	}
 
 	@Override
-	public int getRegenCooldown() { return this._regenCooldown; }
+	public void setCooldown(int time) {
+		this._cooldown = time;
+	}
+
+	@Override
+	public int getCooldown() {
+		return this._cooldown;
+	}
 
 	/*
 	 * LEVELING SYSTEM
@@ -125,21 +158,21 @@ public class PlayerData implements IPlayerData {
 
 	@Override
 	public void setWood(String wood) {
-		if (this._wood == null) { //Only apply if the player doesn't already have it set
+		if (this._wood.equals("null")) { //Only apply if the player doesn't already have it set
 			this._wood = wood;
 		}
 	}
 
 	@Override
 	public void setCore(String core) {
-		if (this._core == null) { //Only apply if the player doesn't already have it set
+		if (this._core.equals("null")) { //Only apply if the player doesn't already have it set
 			this._core = core;
 		}
 	}
 
 	@Override
 	public void setCap(String cap) {
-		if (this._cap == null) { //Only apply if the player doesn't already have it set
+		if (this._cap.equals("null")) { //Only apply if the player doesn't already have it set
 			this._cap = cap;
 		}
 	}
@@ -157,5 +190,116 @@ public class PlayerData implements IPlayerData {
 	@Override
 	public String getCap() {
 		return this._cap;
+	}
+
+	public static LazyOptional<IPlayerData> getPlayerData(final PlayerEntity player) {
+		return player.getCapability(DATA_CAPABILITY, DEFAULT_FACING);
+	}
+
+	public static ICapabilityProvider createProvider(final IPlayerData playerData) {
+		return new PlayerDataProvider(DATA_CAPABILITY, DEFAULT_FACING, playerData);
+	}
+
+	@SuppressWarnings("unused")
+	//@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+	public static class CapabilityHandler {
+
+		@SubscribeEvent
+		public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+			if (!(event.getObject() instanceof PlayerEntity)) return;
+			final PlayerData data = new PlayerData();
+			event.addCapability(DATA_ID, createProvider(data));
+		}
+
+		@SubscribeEvent
+		public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+			PlayerEntity player = event.player;
+			if (player.world.isRemote) return;
+			if (player instanceof ServerPlayerEntity) {
+				if (player == null) return;
+				getPlayerData(player).ifPresent(data -> {
+					int timer = 20;
+
+					if (!data.isCanRegen()) {
+						if (data.getCooldown() > 0) {
+							data.setCooldown(data.getCooldown() - 1);
+						}
+						else {
+							data.setCanRegen(true);
+						}
+					}
+					else {
+						if (player.world.getLight(player.getPosition()) > 7) {
+							timer /= 2;
+						}
+						if (_tickCount >= timer) {
+							float regen = data.getMaxMana() * 0.05f;
+							data.changeMana(regen);
+							//NetworkHandler.sendToServer(new ManaChangeMessage(regen));
+							//System.out.println(Reference.MOD_ID + ": regen mana");
+							_tickCount = 0;
+						}
+						else ++_tickCount;
+					}
+					DataSyncMessage.DataSyncData syncMessage = new DataSyncMessage.DataSyncData(
+							data.isCanRegen(),
+							data.getMaxMana(),
+							data.getCurrMana(),
+							data.getCooldown(),
+							data.getLevel(),
+							data.getExperience(),
+							data.getExpToLvl(),
+							data.getWood(),
+							data.getCore(),
+							data.getCap());
+					NetworkHandler.sendTo(new DataSyncMessage(syncMessage), (ServerPlayerEntity) player);
+				});
+			}
+		}
+
+		@SubscribeEvent
+		public void onPlayerLogsIn(PlayerEvent.PlayerLoggedInEvent event) {
+			PlayerEntity player = event.getPlayer();
+			if (player.world.isRemote) return;
+			getPlayerData(player).ifPresent(data -> {
+				if (data.getWood().equals("null") && data.getCore().equals("null") && data.getCap().equals("null")) {
+					Random rand = new Random();
+					data.setWood(Reference.WOOD_TYPES[rand.nextInt(Reference.WOOD_TYPES.length)]);
+					data.setCore(Reference.WOOD_TYPES[rand.nextInt(Reference.WOOD_TYPES.length)]);
+					data.setCap(Reference.WOOD_TYPES[rand.nextInt(Reference.WOOD_TYPES.length)]);
+				}
+				String message0 = String.format("Your personalized wand [Wood: %s] [core: %s] [cap: %s]", data.getWood(), data.getCore(), data.getCap());
+				player.sendMessage(new StringTextComponent(message0));
+
+				String message1 = String.format("%d / %d Aether", (int) data.getCurrMana(), (int) data.getMaxMana());
+				player.sendMessage(new StringTextComponent(message1));
+
+				String message2 = String.format("Level %d", (int) data.getLevel());
+				player.sendMessage(new StringTextComponent(message2));
+			});
+		}
+
+		@SubscribeEvent
+		public void onPlayerClone(PlayerEvent.Clone event) {
+			PlayerEntity player = event.getPlayer();
+			if (player.world.isRemote) return;
+			getPlayerData(event.getOriginal()).ifPresent(oldData -> {
+				getPlayerData(player).ifPresent(data -> {
+					data.setCanRegen(oldData.isCanRegen());
+					data.setCurrMana(oldData.getCurrMana());
+					data.setMaxMana(oldData.getMaxMana());
+					data.setCooldown(oldData.getCooldown());
+
+					data.setLevel(oldData.getLevel());
+					data.addExp(oldData.getExperience(), true);
+					data.setExpToLvl(oldData.getExpToLvl());
+
+					data.setCap(oldData.getCap());
+					data.setCore(oldData.getCore());
+					data.setWood(oldData.getWood());
+				});
+			});
+
+		}
 	}
 }

@@ -1,34 +1,107 @@
 package gtlugo.solarsorcery.playerdata;
 
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.INBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 
-public class PlayerDataProvider implements ICapabilitySerializable<NBTBase> {
-	@CapabilityInject(IPlayerData.class) 
-	public static final Capability<IPlayerData> TAG_DATA = null; 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-	private IPlayerData instance = TAG_DATA.getDefaultInstance(); 
+public class PlayerDataProvider implements ICapabilitySerializable<INBT> {
 
-	@Override 
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) { 
-		return capability == TAG_DATA; 
-	} 
+	protected final Capability<IPlayerData> DATA_CAPABILITY;
+	private final Direction facing;
+	private final IPlayerData instance;
+	private final LazyOptional<IPlayerData> lazyOptional;
 
-	@Override 
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) { 
-		return capability == TAG_DATA ? TAG_DATA.<T> cast(this.instance) : null; 
-	} 
+	//private IPlayerData instance = DATA_CAPABILITY.getDefaultInstance();
 
-	@Override 
-	public NBTBase serializeNBT() { 
-		return TAG_DATA.getStorage().writeNBT(TAG_DATA, this.instance, null); 
-	} 
+	public PlayerDataProvider(final Capability<IPlayerData> capability, @Nullable final Direction facing, @Nullable final IPlayerData instance) {
 
-	@Override 
-	public void deserializeNBT(NBTBase nbt) { 
-		TAG_DATA.getStorage().readNBT(TAG_DATA, this.instance, null, nbt); 
-	} 
+		this.DATA_CAPABILITY = capability;
+		this.facing = facing;
+
+		this.instance = instance;
+
+		if (this.instance != null) {
+			lazyOptional = LazyOptional.of(() -> this.instance);
+		} else {
+			lazyOptional = LazyOptional.empty();
+		}
+	}
+
+	public final Capability<IPlayerData> getCapability() {
+		return DATA_CAPABILITY;
+	}
+
+	@Nullable
+	public final IPlayerData getInstance() {
+		return instance;
+	}
+
+	@Nullable
+	public final Direction getFacing() {
+		return facing;
+	}
+
+	@Override
+	public <T> LazyOptional<T> getCapability(final Capability<T> capability, Direction facing) {
+
+		return getCapability().orEmpty(capability, lazyOptional);
+	}
+
+	/*
+        @Nullable
+        @Override
+        public INBT serializeNBT() {
+            final IPlayerData instance = getInstance();
+
+            if (instance == null) {
+                return null;
+            }
+
+            return getCapability().writeNBT(instance, getFacing());
+        }
+
+        @Override
+        public void deserializeNBT(final INBT nbt) {
+            final IPlayerData instance = getInstance();
+
+            if (instance == null) {
+                return;
+            }
+
+            getCapability().readNBT(instance, getFacing(), nbt);
+        }
+    */
+	@Override
+	public INBT serializeNBT() {
+		final IPlayerData instance = getInstance();
+		if (instance == null) return null;
+		return DATA_CAPABILITY.getStorage().writeNBT(getCapability(), getInstance(), null);
+	}
+
+	@Override
+	public void deserializeNBT(INBT nbt) {
+		final IPlayerData instance = getInstance();
+		if (instance == null) return;
+		DATA_CAPABILITY.getStorage().readNBT(getCapability(), getInstance(), null, nbt);
+	}
+	/*
+	@Nonnull
+	@Override
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+		return null;
+	}
+
+	@Nonnull
+	@Override
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
+		return null;
+	}
+
+	 */
 }
