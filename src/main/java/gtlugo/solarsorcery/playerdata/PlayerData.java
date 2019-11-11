@@ -2,9 +2,9 @@ package gtlugo.solarsorcery.playerdata;
 
 import gtlugo.solarsorcery.SolarSorcery;
 import gtlugo.solarsorcery.handlers.NetworkHandler;
+import gtlugo.solarsorcery.init.item.wand.wandparts.WandPart;
 import gtlugo.solarsorcery.lib.Reference;
 import gtlugo.solarsorcery.networking.DataSyncMessage;
-import gtlugo.solarsorcery.networking.ManaChangeMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -19,10 +19,10 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
-import javax.annotation.Nullable;
 import java.util.Random;
+
+import static gtlugo.solarsorcery.init.item.wand.wandparts.WandMaterials.*;
 
 public class PlayerData implements IPlayerData {
 	public static final ResourceLocation DATA_ID = SolarSorcery.getId("data");
@@ -43,10 +43,11 @@ public class PlayerData implements IPlayerData {
 	private int _experience = 0;
 	private int _expToLvl = 1000;
 	
-	private String _wood = "null";
-	private String _core = "null";
-	private String _cap = "null";
-	
+	private String _wood = null;
+	private String _core = null;
+	private String _deco = null;
+
+	//region Getters and Setters
 	/*
 	 * MANA SYSTEM
 	 */
@@ -158,23 +159,17 @@ public class PlayerData implements IPlayerData {
 
 	@Override
 	public void setWood(String wood) {
-		if (this._wood.equals("null")) { //Only apply if the player doesn't already have it set
-			this._wood = wood;
-		}
+		this._wood = wood;
 	}
 
 	@Override
 	public void setCore(String core) {
-		if (this._core.equals("null")) { //Only apply if the player doesn't already have it set
-			this._core = core;
-		}
+		this._core = core;
 	}
 
 	@Override
-	public void setCap(String cap) {
-		if (this._cap.equals("null")) { //Only apply if the player doesn't already have it set
-			this._cap = cap;
-		}
+	public void setDeco(String deco) {
+		this._deco = deco;
 	}
 	
 	@Override
@@ -188,8 +183,8 @@ public class PlayerData implements IPlayerData {
 	}
 
 	@Override
-	public String getCap() {
-		return this._cap;
+	public String getDeco() {
+		return this._deco;
 	}
 
 	public static LazyOptional<IPlayerData> getPlayerData(final PlayerEntity player) {
@@ -199,6 +194,7 @@ public class PlayerData implements IPlayerData {
 	public static ICapabilityProvider createProvider(final IPlayerData playerData) {
 		return new PlayerDataProvider(DATA_CAPABILITY, DEFAULT_FACING, playerData);
 	}
+	//endregion
 
 	@SuppressWarnings("unused")
 	//@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -251,7 +247,8 @@ public class PlayerData implements IPlayerData {
 							data.getExpToLvl(),
 							data.getWood(),
 							data.getCore(),
-							data.getCap());
+							data.getDeco()
+					);
 					NetworkHandler.sendTo(new DataSyncMessage(syncMessage), (ServerPlayerEntity) player);
 				});
 			}
@@ -262,20 +259,23 @@ public class PlayerData implements IPlayerData {
 			PlayerEntity player = event.getPlayer();
 			if (player.world.isRemote) return;
 			getPlayerData(player).ifPresent(data -> {
-				if (data.getWood().equals("null") && data.getCore().equals("null") && data.getCap().equals("null")) {
+				if (data.getWood() == null && data.getCore() == null && data.getDeco() == null) {
 					Random rand = new Random();
-					data.setWood(Reference.WOOD_TYPES[rand.nextInt(Reference.WOOD_TYPES.length)]);
-					data.setCore(Reference.WOOD_TYPES[rand.nextInt(Reference.WOOD_TYPES.length)]);
-					data.setCap(Reference.WOOD_TYPES[rand.nextInt(Reference.WOOD_TYPES.length)]);
+					data.setWood(WoodMaterials.get(rand.nextInt(WoodMaterials.size()))._materialName);
+					data.setCore(CoreMaterials.get(rand.nextInt(CoreMaterials.size()))._materialName);
+					data.setDeco(DecoMaterials.get(rand.nextInt(DecoMaterials.size()))._materialName);
 				}
-				String message0 = String.format("Your personalized wand [Wood: %s] [core: %s] [cap: %s]", data.getWood(), data.getCore(), data.getCap());
-				player.sendMessage(new StringTextComponent(message0));
+				String message = String.format("Your personalized wand:");
+				player.sendMessage(new StringTextComponent(message));
 
-				String message1 = String.format("%d / %d Aether", (int) data.getCurrMana(), (int) data.getMaxMana());
-				player.sendMessage(new StringTextComponent(message1));
+				message = String.format("[Wood: %s] [Core: %s] [Deco: %s]", data.getWood().toString(), data.getCore().toString(), data.getDeco().toString());
+				player.sendMessage(new StringTextComponent(message));
 
-				String message2 = String.format("Level %d", (int) data.getLevel());
-				player.sendMessage(new StringTextComponent(message2));
+				message = String.format("Aether: [ %d / %d ]", (int) data.getCurrMana(), (int) data.getMaxMana());
+				player.sendMessage(new StringTextComponent(message));
+
+				message = String.format("Level: [ %d ]", (int) data.getLevel());
+				player.sendMessage(new StringTextComponent(message));
 			});
 		}
 
@@ -294,9 +294,9 @@ public class PlayerData implements IPlayerData {
 					data.addExp(oldData.getExperience(), true);
 					data.setExpToLvl(oldData.getExpToLvl());
 
-					data.setCap(oldData.getCap());
-					data.setCore(oldData.getCore());
 					data.setWood(oldData.getWood());
+					data.setCore(oldData.getCore());
+					data.setDeco(oldData.getDeco());
 				});
 			});
 

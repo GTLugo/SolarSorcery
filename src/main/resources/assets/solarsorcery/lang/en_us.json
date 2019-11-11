@@ -2,7 +2,9 @@
   "block.solarsorcery.meteorite": "Meteorite",
   
   "item.solarsorcery.magic_wand": "Magic Wand",
-  "item.solarsorcery.null_wand": "NULL Wand",
+
+  "item.solarsorcery.solar_sword": "Solar Sword",
+  "item.solarsorcery.solar_picksaw": "Solar Picksaw",
 
   "item.solarsorcery.wand_oak": "Oak Wand",
   "item.solarsorcery.wand_birch": "Birch Wand",
@@ -11,15 +13,49 @@
   "item.solarsorcery.wand_acacia": "Acacia Wand",
   "item.solarsorcery.wand_darkoak": "Dark Oak Wand",
   "item.solarsorcery.wand_bone": "Bone Wand",
+  "item.solarsorcery.wand_blazerod": "Blaze Wand",
+  "item.solarsorcery.wand_bamboo": "Bamboo Wand",
+  "item.solarsorcery.wand_prismarine": "Prismarine Wand",
 
-  "item.solarsorcery.solar_sword": "Solar Sword",
-  "item.solarsorcery.solar_picksaw": "Solar Picksaw",
+  "item.solarsorcery.wand_null": "Null Wand",
 
-  "solarsorcerymisc.string": "Spider Heartstring",
-  "solarsorcerymisc.gunpowder": "Essence of Creeper",
-  "solarsorcerymisc.feather": "Chicken Feather",
-  "solarsorcerymisc.redstone": "Redstone Dust",
-  "solarsorcerymisc.blazepowder": "Blazing Powder",
-  "solarsorcerymisc.ironcapped": "Iron Capped",
-  "solarsorcerymisc.goldcapped": "Gold Capped"
+  "tooltip.solarsorcery.string": "Spider Heartstring",
+  "tooltip.solarsorcery.gunpowder": "Essence of Creeper",
+  "tooltip.solarsorcery.feather": "Chicken Feather",
+  "tooltip.solarsorcery.redstone": "Redstone Dust",
+  "tooltip.solarsorcery.blazepowder": "Blazing Powder",
+  "tooltip.solarsorcery.enderpearl": "Ender Pearl",
+  "tooltip.solarsorcery.glowstone": "Glowing Dust",
+  "tooltip.solarsorcery.chorusfruit": "Chorus Fruit",
+  "tooltip.solarsorcery.slimeball": "Ball of Slime",
+  "tooltip.solarsorcery.netherwart": "Bloody Wart",
+  "tooltip.solarsorcery.netherquartz": "Singing Quartz",
+  "tooltip.solarsorcery.nautilusshell": "Nautilus Shell",
+  "tooltip.solarsorcery.heartofthesea": "Heart of the Sea",
+  "tooltip.solarsorcery.netherstar": "Nether Star",
+  "tooltip.solarsorcery.prismarinecrystals": "Oceanic Crystal",
+  "tooltip.solarsorcery.endcrystal": "Enderic Crystal",
+
+  "tooltip.solarsorcery.null_core": "Heart of Null",
+
+  "tooltip.solarsorcery.oak": "Oak Engraved",
+  "tooltip.solarsorcery.birch": "Birch Engraved",
+  "tooltip.solarsorcery.spruce": "Spruce Engraved",
+  "tooltip.solarsorcery.jungle": "Jungle Engraved",
+  "tooltip.solarsorcery.acacia": "Acacia Engraved",
+  "tooltip.solarsorcery.darkoak": "Dark Oak Engraved",
+  "tooltip.solarsorcery.bone": "Bone Engraved",
+  "tooltip.solarsorcery.blazerod": "Blaze Engraved",
+  "tooltip.solarsorcery.bamboo": "Bamboo Engraved",
+  "tooltip.solarsorcery.prismarine": "Prismarine Engraved",
+  "tooltip.solarsorcery.iron": "Iron Capped",
+  "tooltip.solarsorcery.gold": "Gold Capped",
+  "tooltip.solarsorcery.diamond": "Diamond Encrusted",
+  "tooltip.solarsorcery.emerald": "Emerald Encrusted",
+  "tooltip.solarsorcery.leather": "Leather Wrapped",
+
+  "tooltip.solarsorcery.null_deco": "Nullified",
+
+  "tooltip.solarsorcery.owner": "Owner",
+  "tooltip.solarsorcery.unclaimed": "Unclaimed"
 }

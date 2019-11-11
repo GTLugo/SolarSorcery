@@ -1,6 +1,6 @@
 {
 	"parent": "item/handheld",
 	"textures": {
-		"layer0": "solarsorcery:items/oak_wand"
+		"layer0": "solarsorcery:item/wand/wood/oak"
 	}
 }

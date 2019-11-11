@@ -1,6 +1,7 @@
 package gtlugo.solarsorcery.playerdata;
 
-import net.minecraft.entity.player.PlayerEntity;
+import gtlugo.solarsorcery.init.item.wand.wandparts.WandPart;
+import gtlugo.solarsorcery.lib.Reference;
 
 public interface IPlayerData {
 
@@ -44,11 +45,11 @@ public interface IPlayerData {
 
 	public void setCore(String core);
 
-	public void setCap(String cap);
+	public void setDeco(String cap);
 
 	public String getWood();
 
 	public String getCore();
 
-	public String getCap();
+	public String getDeco();
 }

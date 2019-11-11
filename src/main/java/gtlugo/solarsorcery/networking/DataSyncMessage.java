@@ -1,9 +1,9 @@
 package gtlugo.solarsorcery.networking;
 
 import gtlugo.solarsorcery.SolarSorcery;
-import gtlugo.solarsorcery.playerdata.IPlayerData;
+import gtlugo.solarsorcery.lib.Reference;
 import gtlugo.solarsorcery.playerdata.PlayerData;
-import gtlugo.solarsorcery.playerdata.PlayerDataProvider;
+
 import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
@@ -33,7 +33,7 @@ public class DataSyncMessage {
 
 		buf.writeString(msg._data.getWood());
 		buf.writeString(msg._data.getCore());
-		buf.writeString(msg._data.getCap());
+		buf.writeString(msg._data.getDeco());
 	}
 
 	public static DataSyncMessage decode(PacketBuffer buf) {
@@ -58,7 +58,7 @@ public class DataSyncMessage {
 			//if (ctx.get().getDirection().getOriginationSide().isClient()) {
 			PlayerEntity player = Minecraft.getInstance().player; // try origination or reception?
 
-				SolarSorcery.LOGGER.info("Syncing player data between client and server...");
+				//SolarSorcery.LOGGER.info("Syncing player data between client and server...");
 				if (player != null)
 				PlayerData.getPlayerData(player).ifPresent(data -> {
 					data.setCanRegen(msg._data.isCanRegen());
@@ -72,7 +72,7 @@ public class DataSyncMessage {
 
 					data.setWood(msg._data.getWood());
 					data.setCore(msg._data.getCore());
-					data.setCap(msg._data.getCap());
+					data.setDeco(msg._data.getDeco());
 				});
 			//}
 		});
@@ -91,7 +91,7 @@ public class DataSyncMessage {
 
 		private String _wood;
 		private String _core;
-		private String _cap;
+		private String _deco;
 
 		public DataSyncData(
 				boolean canRegen,
@@ -103,7 +103,7 @@ public class DataSyncMessage {
 				int expToLvl,
 				String wood,
 				String core,
-				String cap) {
+				String deco) {
 			this._canRegen = canRegen;
 			this._maxMana = maxMana;
 			this._currMana = currMana;
@@ -115,7 +115,7 @@ public class DataSyncMessage {
 
 			this._wood = wood;
 			this._core = core;
-			this._cap = cap;
+			this._deco = deco;
 		}
 
 		public boolean isCanRegen() {
@@ -154,8 +154,8 @@ public class DataSyncMessage {
 			return this._core;
 		}
 
-		public String getCap() {
-			return this._cap;
+		public String getDeco() {
+			return this._deco;
 		}
 	}
 }

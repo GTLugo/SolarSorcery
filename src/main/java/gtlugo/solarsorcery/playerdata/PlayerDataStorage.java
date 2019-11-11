@@ -25,7 +25,7 @@ public class PlayerDataStorage implements IStorage<IPlayerData> {
 		
 		tag.putString(Reference.TAG_WANDWOOD, instance.getWood());
 		tag.putString(Reference.TAG_WANDCORE, instance.getCore());
-		tag.putString(Reference.TAG_WANDCAP, instance.getCap());
+		tag.putString(Reference.TAG_WANDDECO, instance.getDeco());
 		return tag; 
 	}
 
@@ -43,6 +43,6 @@ public class PlayerDataStorage implements IStorage<IPlayerData> {
 		
 		instance.setWood(((CompoundNBT) nbt).getString(Reference.TAG_WANDWOOD));
 		instance.setCore(((CompoundNBT) nbt).getString(Reference.TAG_WANDCORE));
-		instance.setCap(((CompoundNBT) nbt).getString(Reference.TAG_WANDCAP));
+		instance.setDeco(((CompoundNBT) nbt).getString(Reference.TAG_WANDDECO));
 	}
 }

@@ -3,6 +3,7 @@ package gtlugo.solarsorcery;
 import gtlugo.solarsorcery.handlers.*;
 import gtlugo.solarsorcery.init.ModBlocks;
 import gtlugo.solarsorcery.init.ModItems;
+import gtlugo.solarsorcery.init.item.wand.WandBase;
 import gtlugo.solarsorcery.lib.Reference;
 import gtlugo.solarsorcery.playerdata.IPlayerData;
 import gtlugo.solarsorcery.playerdata.PlayerData;
